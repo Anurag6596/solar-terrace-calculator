@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +25,41 @@ const Index = () => {
   const [calculationResult, setCalculationResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Helper to prepare the payload for MongoDB
+  const prepareCalculationPayload = () => {
+    const consumptionValues = Object.values(monthlyConsumption);
+    const totalAnnualConsumption = consumptionValues.reduce((sum, val) => sum + parseFloat(val), 0);
+    const averageMonthlyConsumption = totalAnnualConsumption / 12;
+    const terraceArea = parseFloat(userInfo.terraceSize);
+
+    const panelEfficiency = 0.15;
+    const sunHoursPerDay = 5;
+    const systemEfficiency = 0.85;
+
+    const dailyConsumption = averageMonthlyConsumption;
+    const requiredCapacityKW = dailyConsumption / (sunHoursPerDay * 30 * systemEfficiency);
+    const panelAreaRequired = 7;
+    const maxCapacityByArea = terraceArea / panelAreaRequired;
+    const recommendedCapacity = Math.min(requiredCapacityKW, maxCapacityByArea);
+    const finalCapacity = Math.ceil(recommendedCapacity);
+
+    return {
+      userInfo: {
+        ...userInfo,
+        terraceSize: terraceArea
+      },
+      monthlyConsumption: Object.fromEntries(
+        Object.entries(monthlyConsumption).map(([k, v]) => [k, parseFloat(v)])
+      ),
+      totalAnnualConsumption,
+      averageMonthlyConsumption,
+      recommendedCapacity: finalCapacity,
+      maxCapacityByArea: Math.floor(maxCapacityByArea),
+      estimatedSavings: finalCapacity * 1500 * 12,
+      panelsRequired: Math.ceil(finalCapacity * 3)
+    };
+  };
+
   const handleCalculate = () => {
     // Validate form data
     if (!userInfo.name || !userInfo.mobile || !userInfo.terraceSize) {
@@ -47,44 +81,11 @@ const Index = () => {
       return;
     }
 
-    // Calculate solar capacity
-    const totalAnnualConsumption = consumptionValues.reduce((sum, val) => sum + parseFloat(val), 0);
-    const averageMonthlyConsumption = totalAnnualConsumption / 12;
-    const terraceArea = parseFloat(userInfo.terraceSize);
-
-    // Solar panel calculations (simplified)
-    const panelEfficiency = 0.15; // 15% efficiency
-    const sunHoursPerDay = 5; // Average sun hours in India
-    const systemEfficiency = 0.85; // Overall system efficiency
-
-    // Calculate required capacity in kW
-    const dailyConsumption = averageMonthlyConsumption; // Assuming monthly consumption is in kWh
-    const requiredCapacityKW = dailyConsumption / (sunHoursPerDay * 30 * systemEfficiency);
-
-    // Calculate maximum capacity based on terrace size
-    const panelAreaRequired = 7; // sq ft per kW
-    const maxCapacityByArea = terraceArea / panelAreaRequired;
-
-    // Final recommended capacity
-    const recommendedCapacity = Math.min(requiredCapacityKW, maxCapacityByArea);
-    const finalCapacity = Math.ceil(recommendedCapacity);
-
-    const result = {
-      userInfo,
-      monthlyConsumption,
-      totalAnnualConsumption,
-      averageMonthlyConsumption,
-      terraceArea,
-      recommendedCapacity: finalCapacity,
-      maxCapacityByArea: Math.floor(maxCapacityByArea),
-      estimatedSavings: finalCapacity * 1500 * 12, // Rough estimate
-      panelsRequired: Math.ceil(finalCapacity * 3) // Assuming 335W panels
-    };
-
+    const result = prepareCalculationPayload();
     setCalculationResult(result);
     toast({
       title: "Calculation Complete!",
-      description: `Recommended solar capacity: ${finalCapacity}KW`,
+      description: `Recommended solar capacity: ${result.recommendedCapacity}KW`,
     });
   };
 
@@ -99,24 +100,30 @@ const Index = () => {
     }
 
     setIsSubmitting(true);
-    
+
     try {
-      // Simulate API call to save data
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      const response = await fetch('http://localhost:3000/api/save-calculation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(calculationResult)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save data');
+      }
+
       toast({
         title: "Success!",
         description: "Your solar calculation has been saved successfully.",
       });
-      
-      // Reset form
+
       setUserInfo({ name: '', mobile: '', terraceSize: '' });
       setMonthlyConsumption({
         january: '', february: '', march: '', april: '', may: '', june: '',
         july: '', august: '', september: '', october: '', november: '', december: ''
       });
       setCalculationResult(null);
-      
+
     } catch (error) {
       toast({
         title: "Error",

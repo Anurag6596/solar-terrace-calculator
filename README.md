@@ -1,73 +1,115 @@
-# Welcome to your Lovable project
+# Solar Terrace Calculator
 
-## Project info
+A full-stack web application to help users calculate the recommended solar panel capacity for their terrace, estimate savings, and store user details and calculations in a MongoDB database.
 
-**URL**: https://lovable.dev/projects/62c5e048-b784-487d-a5bf-b24de9673378
+---
 
-## How can I edit this code?
+## 📁 Project Structure
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/62c5e048-b784-487d-a5bf-b24de9673378) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+solar-terrace-calculator/
+│
+├── server/                      # Backend (Node.js/Express/MongoDB)
+│   ├── models/
+│   │   ├── SolarCalculation.js  # Mongoose schema for calculations
+│   │   └── db.js                # MongoDB connection logic
+│   ├── routes/
+│   │   └── saveCalculation.js   # API route to save calculation
+│   ├── app.js                   # Express app entry point
+│   └── package.json             # Backend dependencies
+│
+└── src/                         # Frontend (React)
+    └── pages/
+        └── Index.tsx            # Main calculator page
+    └── ...                      # Other frontend files
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🚀 Features
 
-**Use GitHub Codespaces**
+- User inputs terrace size, monthly power consumption, and contact info.
+- Calculates recommended solar panel capacity and estimated savings.
+- Saves all user details and calculation results to MongoDB.
+- Modern React frontend, Express backend, and MongoDB database.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 🛠️ Prerequisites
 
-This project is built with:
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- [MongoDB](https://www.mongodb.com/try/download/community) (local or [MongoDB Atlas](https://www.mongodb.com/atlas/database))
+- [Git](https://git-scm.com/)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 📝 How to Clone and Run
 
-Simply open [Lovable](https://lovable.dev/projects/62c5e048-b784-487d-a5bf-b24de9673378) and click on Share -> Publish.
+### 1. **Clone the Repository**
 
-## Can I connect a custom domain to my Lovable project?
+```sh
+git clone https://github.com/Anurag6596/solar-terrace-calculator.git
+cd solar-terrace-calculator
+```
 
-Yes, you can!
+### 2. **Setup the Backend**
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```sh
+cd server
+npm install
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- Create a `.env` file in the `server` folder with:
+  ```
+  MONGODB_URI=mongodb://localhost:27017/solar
+  ```
+  *(Or use your MongoDB Atlas URI)*
+
+- Start the backend server:
+  ```sh
+  node app.js
+  ```
+  or (for auto-reload):
+  ```sh
+  npx nodemon app.js
+  ```
+
+### 3. **Setup the Frontend**
+
+```sh
+cd ../
+# If using React with Vite or Create React App:
+npm install
+npm run dev
+# or
+npm start
+```
+
+- The frontend will run on `http://localhost:3000` or `http://localhost:8080` depending on your setup.
+
+---
+
+## 🌐 Deployment
+
+- **Frontend:** Deploy the `src` folder (build output) to [Netlify](https://netlify.com/) or [Vercel](https://vercel.com/).
+- **Backend:** Deploy the `server` folder to [Render](https://render.com/), [Railway](https://railway.app/), or similar Node.js hosting.
+- **Database:** Use [MongoDB Atlas](https://www.mongodb.com/atlas/database) for a free cloud MongoDB instance.
+
+---
+
+## ⚙️ Configuration
+
+- Update CORS origins in `server/app.js` for your production frontend domain.
+- Update `MONGODB_URI` in your `.env` for production.
+
+---
+
+## 🙋‍♂️ Contributing
+
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## 📞 Contact
+
+For questions, open an issue or contact the maintainer.
