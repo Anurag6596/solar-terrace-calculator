@@ -102,7 +102,7 @@ const Index = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/save-calculation', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/save-calculation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(calculationResult)
