@@ -8,8 +8,8 @@ const app = express();
 
 // Dynamic CORS origin function
 const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:8080',
+  'solarroofcalc.netlify.app',
+  'https://solar-terrace-calculator.onrender.com', // <-- add your render domain here
   // 'https://your-production-domain.com' // <-- add your prod domain here
 ];
 
