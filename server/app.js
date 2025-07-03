@@ -6,16 +6,14 @@ const saveCalculationRoute = require('./routes/saveCalculation');
 
 const app = express();
 
-// Dynamic CORS origin function
 const allowedOrigins = [
-  'solarroofcalc.netlify.app',
-  'https://solar-terrace-calculator.onrender.com', // <-- add your render domain here
-  // 'https://your-production-domain.com' // <-- add your prod domain here
+  'https://solarroofcalc.netlify.app',
+  'https://solar-terrace-calculator.onrender.com',
+  // Add other allowed origins here
 ];
 
 app.use(cors({
   origin: function(origin, callback) {
-    // allow requests with no origin (like mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
@@ -27,6 +25,19 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+// Handle preflight OPTIONS requests for all routes
+app.options('*', cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 
 connectDB();
 
